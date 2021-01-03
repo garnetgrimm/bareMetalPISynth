@@ -8,6 +8,7 @@ extern void dummy ( unsigned int );
 #define ARM_TIMER_DIV 0x2000B41C
 #define ARM_TIMER_CNT 0x2000B420
 
+#define PI_IOBASE_ADDR 0x20000000
 #define SYSTIMERCLO 0x20003004
 #define GPFSEL1 0x20200004
 #define GPSET0  0x2020001C
@@ -31,7 +32,39 @@ struct DAC dac = {
 	0
 };
 
-void outputDAC() {
+typedef enum {
+	GPIO_INPUT = 0b000,									// 0
+	GPIO_OUTPUT = 0b001,								// 1
+	GPIO_ALTFUNC5 = 0b010,								// 2
+	GPIO_ALTFUNC4 = 0b011,								// 3
+	GPIO_ALTFUNC0 = 0b100,								// 4
+	GPIO_ALTFUNC1 = 0b101,								// 5
+	GPIO_ALTFUNC2 = 0b110,								// 6
+	GPIO_ALTFUNC3 = 0b111,								// 7
+} GPIOMODE;
+
+int gpio_setup (unsigned int gpio, GPIOMODE mode) 
+{
+    unsigned int* GPFSEL  = (unsigned int*) (PI_IOBASE_ADDR + 0x200000 + 0x0);
+	if (gpio > 54) return -1;						// Check GPIO pin number valid, return false if invalid
+	if (mode < 0 || mode > GPIO_ALTFUNC3) return -1;	// Check requested mode is valid, return false if invalid
+	unsigned int bit = ((gpio % 10) * 3);				// Create bit mask
+	unsigned int mem = GPFSEL[gpio / 10];				// Read register
+	mem &= ~(7 << bit);									// Clear GPIO mode bits for that port
+	mem |= (mode << bit);								// Logical OR GPIO mode bits
+	GPFSEL[gpio / 10] = mem;							// Write value to register
+	return 0;
+}
+
+void init_DAC() {
+	int i;
+	for(i = BITDEPTH; i > 0; i--) {
+		gpio_setup(dac.pins[i-1],GPIO_OUTPUT);
+	}
+}
+
+
+void output_DAC() {
 	int i;
 	unsigned int output;
 	unsigned int mask;
@@ -49,24 +82,16 @@ int notmain ( void )
 {
     unsigned int ra;
     unsigned int rb;
-
-    ra=GET32(GPFSEL4);
-    ra&=~(7<<21);
-    ra|=1<<21;
-    PUT32(GPFSEL4,ra);
-
-    ra=GET32(GPFSEL3);
-    ra&=~(7<<15);
-    ra|=1<<15;
-    PUT32(GPFSEL3,ra);
-
+	
+	init_DAC();
+	
     PUT32(ARM_TIMER_CTL,0x00F90000);
     PUT32(ARM_TIMER_CTL,0x00F90200);
 
     rb=GET32(ARM_TIMER_CNT);
     while(1)
     {
-		outputDAC();
+		output_DAC();
 		dac.output++;
 		if(dac.output > 0b11) dac.output = 0;
         while(1)
