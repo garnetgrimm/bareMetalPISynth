@@ -6,7 +6,7 @@ Disassembly of section .text:
 
 00008000 <_start>:
     8000:	e3a0d902 	mov	sp, #32768	; 0x8000
-    8004:	eb000011 	bl	8050 <notmain>
+    8004:	eb00001e 	bl	8084 <notmain>
 
 00008008 <hang>:
     8008:	eafffffe 	b	8008 <hang>
@@ -23,75 +23,87 @@ Disassembly of section .text:
     801c:	e12fff1e 	bx	lr
 
 00008020 <outputDAC>:
-    8020:	e3a01001 	mov	r1, #1
-    8024:	e59f301c 	ldr	r3, [pc, #28]	; 8048 <outputDAC+0x28>
-    8028:	e92d4010 	push	{r4, lr}
-    802c:	e5933004 	ldr	r3, [r3, #4]
-    8030:	e2433020 	sub	r3, r3, #32
-    8034:	e59f0010 	ldr	r0, [pc, #16]	; 804c <outputDAC+0x2c>
-    8038:	e1a01311 	lsl	r1, r1, r3
-    803c:	ebfffff2 	bl	800c <PUT32>
-    8040:	e8bd4010 	pop	{r4, lr}
-    8044:	e12fff1e 	bx	lr
-    8048:	00008110 	andeq	r8, r0, r0, lsl r1
-    804c:	2020001c 	eorcs	r0, r0, ip, lsl r0
+    8020:	e92d41f0 	push	{r4, r5, r6, r7, r8, lr}
+    8024:	e3a07001 	mov	r7, #1
+    8028:	e59f4048 	ldr	r4, [pc, #72]	; 8078 <outputDAC+0x58>
+    802c:	e994000a 	ldmib	r4, {r1, r3}
+    8030:	e59f6044 	ldr	r6, [pc, #68]	; 807c <outputDAC+0x5c>
+    8034:	e59f5044 	ldr	r5, [pc, #68]	; 8080 <outputDAC+0x60>
+    8038:	e3130001 	tst	r3, #1
+    803c:	e2411020 	sub	r1, r1, #32
+    8040:	11a00006 	movne	r0, r6
+    8044:	01a00005 	moveq	r0, r5
+    8048:	e1a01117 	lsl	r1, r7, r1
+    804c:	ebffffee 	bl	800c <PUT32>
+    8050:	e5941000 	ldr	r1, [r4]
+    8054:	e5943008 	ldr	r3, [r4, #8]
+    8058:	e2411020 	sub	r1, r1, #32
+    805c:	e3130002 	tst	r3, #2
+    8060:	11a00006 	movne	r0, r6
+    8064:	01a00005 	moveq	r0, r5
+    8068:	e1a01117 	lsl	r1, r7, r1
+    806c:	ebffffe6 	bl	800c <PUT32>
+    8070:	e8bd41f0 	pop	{r4, r5, r6, r7, r8, lr}
+    8074:	e12fff1e 	bx	lr
+    8078:	00008140 	andeq	r8, r0, r0, asr #2
+    807c:	20200020 	eorcs	r0, r0, r0, lsr #32
+    8080:	2020002c 	eorcs	r0, r0, ip, lsr #32
 
-00008050 <notmain>:
-    8050:	e92d41f0 	push	{r4, r5, r6, r7, r8, lr}
-    8054:	e59f0094 	ldr	r0, [pc, #148]	; 80f0 <notmain+0xa0>
-    8058:	ebffffed 	bl	8014 <GET32>
-    805c:	e3c0160e 	bic	r1, r0, #14680064	; 0xe00000
-    8060:	e3811602 	orr	r1, r1, #2097152	; 0x200000
-    8064:	e59f0084 	ldr	r0, [pc, #132]	; 80f0 <notmain+0xa0>
-    8068:	ebffffe7 	bl	800c <PUT32>
-    806c:	e59f0080 	ldr	r0, [pc, #128]	; 80f4 <notmain+0xa4>
-    8070:	ebffffe7 	bl	8014 <GET32>
-    8074:	e3c0190e 	bic	r1, r0, #229376	; 0x38000
-    8078:	e3811902 	orr	r1, r1, #32768	; 0x8000
-    807c:	e59f0070 	ldr	r0, [pc, #112]	; 80f4 <notmain+0xa4>
-    8080:	ebffffe1 	bl	800c <PUT32>
-    8084:	e3a018f9 	mov	r1, #16318464	; 0xf90000
-    8088:	e59f0068 	ldr	r0, [pc, #104]	; 80f8 <notmain+0xa8>
-    808c:	ebffffde 	bl	800c <PUT32>
-    8090:	e59f1064 	ldr	r1, [pc, #100]	; 80fc <notmain+0xac>
-    8094:	e59f005c 	ldr	r0, [pc, #92]	; 80f8 <notmain+0xa8>
-    8098:	ebffffdb 	bl	800c <PUT32>
-    809c:	e59f005c 	ldr	r0, [pc, #92]	; 8100 <notmain+0xb0>
-    80a0:	ebffffdb 	bl	8014 <GET32>
-    80a4:	e1a04000 	mov	r4, r0
-    80a8:	e59f8054 	ldr	r8, [pc, #84]	; 8104 <notmain+0xb4>
-    80ac:	e59f7054 	ldr	r7, [pc, #84]	; 8108 <notmain+0xb8>
-    80b0:	e59f6048 	ldr	r6, [pc, #72]	; 8100 <notmain+0xb0>
-    80b4:	e59f5050 	ldr	r5, [pc, #80]	; 810c <notmain+0xbc>
-    80b8:	e3a01001 	mov	r1, #1
-    80bc:	e5983004 	ldr	r3, [r8, #4]
-    80c0:	e2433020 	sub	r3, r3, #32
-    80c4:	e1a00007 	mov	r0, r7
-    80c8:	e1a01311 	lsl	r1, r1, r3
+00008084 <notmain>:
+    8084:	e92d41f0 	push	{r4, r5, r6, r7, r8, lr}
+    8088:	e59f0094 	ldr	r0, [pc, #148]	; 8124 <notmain+0xa0>
+    808c:	ebffffe0 	bl	8014 <GET32>
+    8090:	e3c0160e 	bic	r1, r0, #14680064	; 0xe00000
+    8094:	e3811602 	orr	r1, r1, #2097152	; 0x200000
+    8098:	e59f0084 	ldr	r0, [pc, #132]	; 8124 <notmain+0xa0>
+    809c:	ebffffda 	bl	800c <PUT32>
+    80a0:	e59f0080 	ldr	r0, [pc, #128]	; 8128 <notmain+0xa4>
+    80a4:	ebffffda 	bl	8014 <GET32>
+    80a8:	e3c0190e 	bic	r1, r0, #229376	; 0x38000
+    80ac:	e3811902 	orr	r1, r1, #32768	; 0x8000
+    80b0:	e59f0070 	ldr	r0, [pc, #112]	; 8128 <notmain+0xa4>
+    80b4:	ebffffd4 	bl	800c <PUT32>
+    80b8:	e3a018f9 	mov	r1, #16318464	; 0xf90000
+    80bc:	e59f0068 	ldr	r0, [pc, #104]	; 812c <notmain+0xa8>
+    80c0:	ebffffd1 	bl	800c <PUT32>
+    80c4:	e59f1064 	ldr	r1, [pc, #100]	; 8130 <notmain+0xac>
+    80c8:	e59f005c 	ldr	r0, [pc, #92]	; 812c <notmain+0xa8>
     80cc:	ebffffce 	bl	800c <PUT32>
-    80d0:	e1a00006 	mov	r0, r6
+    80d0:	e59f005c 	ldr	r0, [pc, #92]	; 8134 <notmain+0xb0>
     80d4:	ebffffce 	bl	8014 <GET32>
-    80d8:	e0400004 	sub	r0, r0, r4
-    80dc:	e1500005 	cmp	r0, r5
-    80e0:	3afffffa 	bcc	80d0 <notmain+0x80>
-    80e4:	e284483d 	add	r4, r4, #3997696	; 0x3d0000
-    80e8:	e2844c09 	add	r4, r4, #2304	; 0x900
-    80ec:	eafffff1 	b	80b8 <notmain+0x68>
-    80f0:	20200010 	eorcs	r0, r0, r0, lsl r0
-    80f4:	2020000c 	eorcs	r0, r0, ip
-    80f8:	2000b408 	andcs	fp, r0, r8, lsl #8
-    80fc:	00f90200 	rscseq	r0, r9, r0, lsl #4
-    8100:	2000b420 	andcs	fp, r0, r0, lsr #8
-    8104:	00008110 	andeq	r8, r0, r0, lsl r1
-    8108:	2020001c 	eorcs	r0, r0, ip, lsl r0
-    810c:	003d0900 	eorseq	r0, sp, r0, lsl #18
+    80d8:	e3a07000 	mov	r7, #0
+    80dc:	e1a08000 	mov	r8, r0
+    80e0:	e59f6050 	ldr	r6, [pc, #80]	; 8138 <notmain+0xb4>
+    80e4:	e59f5048 	ldr	r5, [pc, #72]	; 8134 <notmain+0xb0>
+    80e8:	e59f404c 	ldr	r4, [pc, #76]	; 813c <notmain+0xb8>
+    80ec:	ebffffcb 	bl	8020 <outputDAC>
+    80f0:	e5963008 	ldr	r3, [r6, #8]
+    80f4:	e2833001 	add	r3, r3, #1
+    80f8:	e3530003 	cmp	r3, #3
+    80fc:	81a03007 	movhi	r3, r7
+    8100:	e5863008 	str	r3, [r6, #8]
+    8104:	e1a00005 	mov	r0, r5
+    8108:	ebffffc1 	bl	8014 <GET32>
+    810c:	e0400008 	sub	r0, r0, r8
+    8110:	e1500004 	cmp	r0, r4
+    8114:	3afffffa 	bcc	8104 <notmain+0x80>
+    8118:	e288883d 	add	r8, r8, #3997696	; 0x3d0000
+    811c:	e2888c09 	add	r8, r8, #2304	; 0x900
+    8120:	eafffff1 	b	80ec <notmain+0x68>
+    8124:	20200010 	eorcs	r0, r0, r0, lsl r0
+    8128:	2020000c 	eorcs	r0, r0, ip
+    812c:	2000b408 	andcs	fp, r0, r8, lsl #8
+    8130:	00f90200 	rscseq	r0, r9, r0, lsl #4
+    8134:	2000b420 	andcs	fp, r0, r0, lsr #8
+    8138:	00008140 	andeq	r8, r0, r0, asr #2
+    813c:	003d0900 	eorseq	r0, sp, r0, lsl #18
 
 Disassembly of section .data:
 
-00008110 <dac>:
-    8110:	0000002f 	andeq	r0, r0, pc, lsr #32
-    8114:	00000023 	andeq	r0, r0, r3, lsr #32
-    8118:	00000001 	andeq	r0, r0, r1
+00008140 <dac>:
+    8140:	0000002f 	andeq	r0, r0, pc, lsr #32
+    8144:	00000023 	andeq	r0, r0, r3, lsr #32
+    8148:	00000000 	andeq	r0, r0, r0
 
 Disassembly of section .ARM.attributes:
 
@@ -112,7 +124,7 @@ Disassembly of section .ARM.attributes:
 Disassembly of section .comment:
 
 00000000 <.comment>:
-   0:	3a434347 	bcc	10d0d24 <dac+0x10c8c14>
+   0:	3a434347 	bcc	10d0d24 <dac+0x10c8be4>
    4:	35312820 	ldrcc	r2, [r1, #-2080]!	; 0xfffff7e0
    8:	322d393a 	eorcc	r3, sp, #950272	; 0xe8000
    c:	2d393130 	ldfcss	f3, [r9, #-192]!	; 0xffffff40

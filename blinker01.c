@@ -17,8 +17,8 @@ extern void dummy ( unsigned int );
 #define GPSET1  0x20200020
 #define GPCLR1  0x2020002C
 
-//#define TIMEOUT 20000000
 #define TIMEOUT 4000000
+
 #define BITDEPTH 2
 
 struct DAC {
@@ -28,19 +28,18 @@ struct DAC {
 
 struct DAC dac = {
 	{ 47, 35 },
-	0b01
+	0
 };
 
-
 void outputDAC() {
-	unsigned int i;
+	int i;
 	unsigned int output;
 	unsigned int mask;
 	
 	mask = 1;
-	for(i = BITDEPTH-1; i > 0; i--) {
-		output = (dac.output & mask) ? GPSET0 : GPCLR1;
-		PUT32(GPSET0,1<<(dac.pins[i]-32));
+	for(i = BITDEPTH; i > 0; i--) {
+		output = (dac.output & mask) ? GPSET1 : GPCLR1;
+		PUT32(output,1<<(dac.pins[i-1]-32));
 		mask <<= 1;
 	}
 }
@@ -67,8 +66,9 @@ int notmain ( void )
     rb=GET32(ARM_TIMER_CNT);
     while(1)
     {
-        dac.output = ~dac.output;
 		outputDAC();
+		dac.output++;
+		if(dac.output > 0b11) dac.output = 0;
         while(1)
         {
             ra=GET32(ARM_TIMER_CNT);
